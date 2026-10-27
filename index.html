@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>WashHub</title>
+<title>Lavadero MTA – Control</title>
 <style>:root{--bg:#0a0f1c;--cd:#111a2e;--cd2:#16213a;--tx:#e8edf7;--mu:#8b98b5;--pr:#3b82f6;--pr2:#60a5fa;--bd:#22304f;--dg:#ef4444;--ok:#22c55e;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -69,11 +69,11 @@ td:last-child{justify-content:flex-end;gap:8px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head><body>
-<div class="bar" id="bar" hidden><b style="display:flex;align-items:center;gap:10px"><img src="logo1.png" alt="" onerror="this.remove()" style="height:34px;width:auto;border-radius:6px">WashHub</b><button onclick="go('home')">Inicio</button><button class="d" onclick="logout()">Cerrar sesión</button></div>
+<div class="bar" id="bar" hidden><b style="display:flex;align-items:center;gap:10px"><img src="logo1.png" alt="" onerror="this.remove()" style="height:34px;width:auto;border-radius:6px">Lavadero MTA</b><button onclick="go('home')">Inicio</button><button class="d" onclick="logout()">Cerrar sesión</button></div>
 <main>
 <section class="v" id="v-login"><div class="card" style="max-width:360px;margin:60px auto">
 
-<h2>WashHub</h2><p class="mu" id="lh">Ingresa con tu usuario y contraseña</p>
+<h2>Lavadero MTA</h2><p class="mu" id="lh">Ingresa con tu usuario y contraseña</p>
 <form onsubmit="return login(event)"><label>Usuario</label><input id="lu" autocomplete="username" autocapitalize="none" required>
 <div style="height:10px"></div><label>Contraseña</label><div style="position:relative"><input id="lp" type="password" autocomplete="current-password" required style="padding-right:46px"><button type="button" onclick="togglePw()" title="Ver contraseña" style="position:absolute;right:4px;top:4px;bottom:4px;min-height:0;padding:0 10px;background:transparent;border:0">👁</button></div>
 <div class="err" id="le"></div><button class="p" style="width:100%;margin-top:8px">Iniciar sesión</button></form>
@@ -131,7 +131,7 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",
 const SUPABASE_URL="https://tjsqyoyiznxxdvchfyjx.supabase.co";
 const SUPABASE_KEY="sb_publishable_hY4WGZ4dNtbkeX_SIUkdVA_iD9vzCmK";  
 // ===========================================================================
-const DOMINIO="WashHub.com"; const mail=u=>{u=u.trim().toLowerCase();return u.includes("@")?u:u+"@"+DOMINIO}; function togglePw(){const i=$("lp");i.type=i.type==="password"?"text":"password"} const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:true}}); try{Object.keys(localStorage).filter(k=>k.startsWith("sb-")).forEach(k=>localStorage.removeItem(k))}catch(e){}
+const DOMINIO="lavaderomta.com"; const mail=u=>{u=u.trim().toLowerCase();return u.includes("@")?u:u+"@"+DOMINIO}; function togglePw(){const i=$("lp");i.type=i.type==="password"?"text":"password"} const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:true}}); try{Object.keys(localStorage).filter(k=>k.startsWith("sb-")).forEach(k=>localStorage.removeItem(k))}catch(e){}
 let ch=null;
 function dbErr(e){alert("Error de base de datos: "+(e&&e.message||e))}
 function showWa(t,m){$("wn").textContent="+"+t;$("wm").value=m;$("wc").textContent="";$("wl").href="https://wa.me/"+t+"?text="+encodeURIComponent(m);$("wmod").hidden=false}
