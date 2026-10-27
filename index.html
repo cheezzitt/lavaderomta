@@ -141,7 +141,7 @@ function go(v,isBack){if(!isBack&&cur!==v&&cur!=="login"&&v!=="home")stack.push(
 }
 async function login(e){e.preventDefault();
   const {data,error}=await sb.auth.signInWithPassword({email:$("lu").value.trim(),password:$("lp").value});
-  if(error){$("le").textContent="Correo o contraseña incorrectos.";return false}
+  if(error){$("le").textContent="Error: "+error.message;return false}
   me=data.user;$("le").textContent="";$("lp").value="";await start();go("home");return false}
 function logout(){sb.auth.signOut();me=null;recs=[];if(ch){sb.removeChannel(ch);ch=null}$("lu").value="";go("login")}
 
