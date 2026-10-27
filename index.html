@@ -73,9 +73,9 @@ td:last-child{justify-content:flex-end;gap:8px}
 <main>
 <section class="v" id="v-login"><div class="card" style="max-width:360px;margin:60px auto">
 
-<h2>Lavadero MTA</h2><p class="mu" id="lh">Ingresa con tu correo y contraseña</p>
-<form onsubmit="return login(event)"><label>Correo electrónico</label><input id="lu" type="email" autocomplete="email" required>
-<div style="height:10px"></div><label>Contraseña</label><input id="lp" type="password" autocomplete="current-password" required>
+<h2>Lavadero MTA</h2><p class="mu" id="lh">Ingresa con tu usuario y contraseña</p>
+<form onsubmit="return login(event)"><label>Usuario</label><input id="lu" autocomplete="username" autocapitalize="none" required>
+<div style="height:10px"></div><label>Contraseña</label><div style="position:relative"><input id="lp" type="password" autocomplete="current-password" required style="padding-right:46px"><button type="button" onclick="togglePw()" title="Ver contraseña" style="position:absolute;right:4px;top:4px;bottom:4px;min-height:0;padding:0 10px;background:transparent;border:0">👁</button></div>
 <div class="err" id="le"></div><button class="p" style="width:100%;margin-top:8px">Iniciar sesión</button></form>
 </div></section>
 
@@ -131,7 +131,7 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",
 const SUPABASE_URL="https://tjsqyoyiznxxdvchfyjx.supabase.co";
 const SUPABASE_KEY="sb_publishable_hY4WGZ4dNtbkeX_SIUkdVA_iD9vzCmK";  
 // ===========================================================================
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const DOMINIO="lavaderomta.com"; const mail=u=>{u=u.trim().toLowerCase();return u.includes("@")?u:u+"@"+DOMINIO}; function togglePw(){const i=$("lp");i.type=i.type==="password"?"text":"password"} const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:true}}); try{Object.keys(localStorage).filter(k=>k.startsWith("sb-")).forEach(k=>localStorage.removeItem(k))}catch(e){}
 let ch=null;
 function dbErr(e){alert("Error de base de datos: "+(e&&e.message||e))}
 function showWa(t,m){$("wn").textContent="+"+t;$("wm").value=m;$("wc").textContent="";$("wl").href="https://wa.me/"+t+"?text="+encodeURIComponent(m);$("wmod").hidden=false}
@@ -153,7 +153,7 @@ function go(v,isBack){if(!isBack&&cur!==v&&cur!=="login"&&v!=="home")stack.push(
   window.scrollTo(0,0);
 }
 async function login(e){e.preventDefault();
-  const {data,error}=await sb.auth.signInWithPassword({email:$("lu").value.trim(),password:$("lp").value});
+  const {data,error}=await sb.auth.signInWithPassword({email:mail($("lu").value),password:$("lp").value});
   if(error){$("le").textContent="Error: "+error.message;return false}
   me=data.user;$("le").textContent="";$("lp").value="";await start();go("home");return false}
 function logout(){sb.auth.signOut();me=null;recs=[];if(ch){sb.removeChannel(ch);ch=null}$("lu").value="";go("login")}
