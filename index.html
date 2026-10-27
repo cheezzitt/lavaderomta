@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lavadero MTA – Control</title>
+<style>
+:root{--bg:#f4f6fa;--cd:#fff;--tx:#1b2433;--mu:#64708a;--pr:#1976d2;--bd:#dde3ee;--dg:#d93025;--ok:#1e8e3e;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151f;--cd:#1a2230;--tx:#e8edf6;--mu:#93a0b8;--pr:#5aa6f5;--bd:#2c3648;--dg:#ff6b60;--ok:#4cc26e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10151f;--cd:#1a2230;--tx:#e8edf6;--mu:#93a0b8;--pr:#5aa6f5;--bd:#2c3648;--dg:#ff6b60;--ok:#4cc26e;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.bar{display:flex;gap:8px;align-items:center;padding:10px 16px;background:var(--cd);border-bottom:1px solid var(--bd);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.bar b{flex:1;font-size:17px}
+main{max-width:980px;margin:0 auto;padding:16px}
+h2{margin:4px 0 14px;font-size:20px}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:16px}
+button{font:inherit;border:1px solid var(--bd);background:var(--cd);color:var(--tx);padding:8px 14px;border-radius:8px;cursor:pointer}
+button.p{background:var(--pr);border-color:var(--pr);color:#fff}
+button.d{background:var(--dg);border-color:var(--dg);color:#fff}
+button.w{background:#25a244;border-color:#25a244;color:#fff}
+button.s{padding:4px 9px;font-size:13px}
+label{display:block;font-size:13px;color:var(--mu);margin-bottom:3px}
+input,select,textarea{width:100%;font:inherit;padding:9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.menu button{padding:22px 14px;font-size:16px;text-align:left;border-radius:12px}
+.menu small{display:block;color:var(--mu);margin-top:4px;font-size:13px}
+.tw{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th{color:var(--mu);font-weight:600}
+.mu{color:var(--mu)}.tag{padding:2px 8px;border-radius:99px;font-size:12px;border:1px solid var(--bd)}
+.ag{margin:14px 0 6px;color:var(--pr);font-weight:700}
+.ev{display:flex;gap:12px;padding:10px 12px;background:var(--cd);border:1px solid var(--bd);border-radius:10px;margin-bottom:6px;flex-wrap:wrap}
+.ev .t{min-width:110px;font-weight:600}
+.mod{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.mod[hidden],.v[hidden],.bar[hidden]{display:none}
+.err{color:var(--dg);font-size:13px;min-height:18px;margin-top:6px}
+.req::after{content:" *";color:var(--dg)}
+.bk{display:block;margin-bottom:10px}
+@media (max-width:640px){
+main{padding:12px}
+.bar{padding:8px 12px;gap:6px}.bar b{font-size:15px}
+.menu,.g{grid-template-columns:1fr}
+input,select,textarea{font-size:16px;padding:12px}
+button{min-height:44px}button.s{min-height:38px;padding:6px 12px}
+.row button,.row a{flex:1 1 100%;text-align:center}
+.tw{overflow:visible}
+table,tbody,tr,td{display:block}thead{display:none}
+tr{background:var(--cd);border:1px solid var(--bd);border-radius:10px;margin-bottom:10px;padding:6px 12px}
+td{white-space:normal;border:0;padding:5px 0;display:flex;justify-content:space-between;gap:12px;text-align:right}
+td::before{content:attr(data-label);color:var(--mu);font-weight:600;text-align:left}
+td:last-child{justify-content:flex-end;gap:8px}
+.ev .t{min-width:0;width:100%}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+</head><body>
+<div class="bar" id="bar" hidden><b>🚗 Lavadero MTA</b><button onclick="go('home')">Inicio</button><button class="d" onclick="logout()">Cerrar sesión</button></div>
+<main>
+<section class="v" id="v-login"><div class="card" style="max-width:360px;margin:60px auto">
+<section class="v" id="v-login"><div class="card" style="max-width:360px;margin:60px auto">
+<h2>Lavadero MTA</h2><p class="mu" id="lh">Ingresa con tu correo y contraseña</p>
+<form onsubmit="return login(event)"><label>Correo electrónico</label><input id="lu" type="email" autocomplete="email" required>
+<div style="height:10px"></div><label>Contraseña</label><input id="lp" type="password" autocomplete="current-password" required>
+<div class="err" id="le"></div><button class="p" style="width:100%;margin-top:8px">Iniciar sesión</button></form>
+</div></section>
+
+<section class="v" id="v-home" hidden><h2>Inicio</h2><div class="menu">
+<button onclick="newRec()">📝 Formulario de carga<small>Registrar un vehículo</small></button>
+<button onclick="go('hist')">📚 Historial de carga<small>Buscar, editar y eliminar</small></button>
+<button onclick="go('obs')">⚠️ Observaciones guardadas<small>Vehículos con notas</small></button>
+<button onclick="go('agenda')">📅 Registro de agendamiento<small>Agenda cronológica</small></button>
+<button onclick="go('cont')">📇 Contactos de clientes<small>Clientes y vehículos</small></button>
+</div></section>
+
+<section class="v" id="v-form" hidden><button class="bk" onclick="back()">← Atrás</button><h2 id="ft">Formulario de carga</h2><div class="card">
+<form id="f" onsubmit="return save(event)"><div class="g">
+<div><label class="req">Fecha</label><input type="date" id="fecha" required></div>
+<div><label class="req">Marca del vehículo</label><input id="marca" required></div>
+<div><label class="req">Modelo del vehículo</label><input id="modelo" required></div>
+<div><label class="req">Número de chapa</label><input id="chapa" required></div>
+<div><label class="req">Nombre del cliente</label><input id="cliente" required></div>
+<div><label>Número del cliente (WhatsApp)</label><input id="tel" type="tel" placeholder="0981 123 456"></div>
+<div><label class="req">Horario de ingreso</label><input type="time" id="hin" required></div>
+<div><label class="req">Horario estimado de entrega</label><input type="time" id="hout" required></div>
+<div><label class="req">Servicio solicitado</label><input id="serv" required></div>
+<div><label class="req">Costo del servicio (Gs.)</label><input type="number" min="0" id="costo" required></div>
+<div><label>Número de facturación</label><input id="fac"></div></div>
+<div style="margin-top:12px"><label>Observación</label><textarea id="obs" rows="3"></textarea></div>
+<div class="row"><button class="p">💾 Guardar</button><button type="button" class="d" onclick="delForm()">🗑 Eliminar registro</button><button type="button" class="w" onclick="waForm()">💬 Contactar con cliente</button><button type="button" onclick="go('hist')">Volver al historial</button></div>
+<div class="err" id="fe"></div></form></div></section>
+
+<section class="v" id="v-hist" hidden><button class="bk" onclick="back()">← Atrás</button><h2>Historial de carga</h2><div class="card">
+<div class="g"><div><label>Fecha</label><input type="date" id="hf" oninput="rh()"></div><div><label>Marca</label><input id="hm" oninput="rh()"></div><div><label>Cliente</label><input id="hc" oninput="rh()"></div><div><label>N.º de facturación</label><input id="hn" oninput="rh()"></div></div>
+<div class="row"><button onclick="clr()">Limpiar filtros</button><button class="p" onclick="newRec()">➕ Cargar nuevo registro</button></div>
+<div class="tw"><table><thead><tr><th>Fecha</th><th>Horario</th><th>Marca / Modelo</th><th>Chapa</th><th>Cliente</th><th>Servicio</th><th>Costo</th><th>Factura</th><th></th></tr></thead><tbody id="hb"></tbody></table></div></div></section>
+
+<section class="v" id="v-obs" hidden><button class="bk" onclick="back()">← Atrás</button><h2>Observaciones guardadas</h2><div class="card">
+<div style="max-width:260px"><label>Mostrar</label><select id="of" onchange="ro()"><option value="con">Vehículos con observaciones</option><option value="sin">Vehículos sin observaciones</option><option value="todos">Todos</option></select></div>
+<div class="tw"><table><thead><tr><th>Fecha</th><th>Vehículo</th><th>Chapa</th><th>Cliente</th><th>Observación</th></tr></thead><tbody id="ob"></tbody></table></div></div></section>
+
+<section class="v" id="v-agenda" hidden><button class="bk" onclick="back()">← Atrás</button><h2>Registro de agendamiento</h2><div id="ag"></div></section>
+
+<section class="v" id="v-cont" hidden><button class="bk" onclick="back()">← Atrás</button><h2>Contactos de clientes</h2><div class="card"><div class="tw"><table><thead><tr><th>Cliente</th><th>Teléfono</th><th>Vehículo</th><th>Chapa</th><th></th></tr></thead><tbody id="cb"></tbody></table></div></div></section>
+</main>
+
+<div class="mod" id="wmod" hidden><div class="card" style="max-width:460px;width:100%"><h2 style="font-size:18px">Contactar con cliente</h2><p class="mu" style="margin:0 0 8px">Número: <b id="wn"></b></p><textarea id="wm" rows="9" readonly></textarea><div class="row"><a id="wl" href="#" target="_blank" rel="noopener" style="display:inline-block;padding:8px 14px;border-radius:8px;background:#25a244;color:#fff;text-decoration:none">💬 Abrir WhatsApp</a><button onclick="cpMsg()">Copiar mensaje</button><button onclick="$('wmod').hidden=true">Cerrar</button></div><div class="err" id="wc" style="color:var(--mu)"></div></div></div>
+<div class="mod" id="mod" hidden><div class="card" style="max-width:340px;width:100%">
+<h2 style="font-size:18px">Confirmar eliminación</h2><p class="mu">Para eliminar este registro ingresa la contraseña de tu sesión.</p>
+<input type="password" id="mp" placeholder="Contraseña"><div class="err" id="me"></div>
+<div class="row"><button class="d" onclick="confDel()">Eliminar</button><button onclick="closeM()">Cancelar</button></div></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// ====== CONFIGURACIÓN: pega aquí los datos de tu proyecto de Supabase ======
+const SUPABASE_URL="PEGA_AQUI_TU_URL";
+const SUPABASE_KEY="PEGA_AQUI_TU_CLAVE_ANON";
+// ===========================================================================
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let ch=null;
+function dbErr(e){alert("Error de base de datos: "+(e&&e.message||e))}
+function showWa(t,m){$("wn").textContent="+"+t;$("wm").value=m;$("wc").textContent="";$("wl").href="https://wa.me/"+t+"?text="+encodeURIComponent(m);$("wmod").hidden=false}
+function cpMsg(){const x=$("wm");x.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}$("wc").textContent=ok?"✔ Mensaje copiado":"No se pudo copiar automáticamente: selecciona el texto y cópialo."}
+const FIELDS=["fecha","marca","modelo","chapa","cliente","tel","hin","hout","serv","costo","fac","obs"];
+let recs=[],editId=null,delId=null,me=null;
+const rf=()=>{if(cur==="hist")rh();if(cur==="obs")ro();if(cur==="agenda")ra();if(cur==="cont")rc()};
+async function loadRecs(){const {data,error}=await sb.from("registros").select("*").order("fecha",{ascending:false});if(error){dbErr(error);return}recs=data;rf()}
+async function start(){await loadRecs();if(ch)sb.removeChannel(ch);ch=sb.channel("reg").on("postgres_changes",{event:"*",schema:"public",table:"registros"},loadRecs).subscribe()}
+const gs=n=>"Gs. "+Number(n||0).toLocaleString("es-PY");
+const fd=d=>d?d.split("-").reverse().join("/"):"";
+
+let cur="login",stack=[];
+function back(){go(stack.pop()||"home",true)}
+function go(v,isBack){if(!isBack&&cur!==v&&cur!=="login"&&v!=="home")stack.push(cur);if(v==="home"||v==="login")stack=[];cur=v;
+  document.querySelectorAll(".v").forEach(e=>e.hidden=e.id!=="v-"+v);
+  $("bar").hidden=v==="login";
+  if(v==="hist")rh();if(v==="obs")ro();if(v==="agenda")ra();if(v==="cont")rc();
+  window.scrollTo(0,0);
+}
+async function login(e){e.preventDefault();
+  const {data,error}=await sb.auth.signInWithPassword({email:$("lu").value.trim(),password:$("lp").value});
+  if(error){$("le").textContent="Correo o contraseña incorrectos.";return false}
+  me=data.user;$("le").textContent="";$("lp").value="";await start();go("home");return false}
+function logout(){sb.auth.signOut();me=null;recs=[];if(ch){sb.removeChannel(ch);ch=null}$("lu").value="";go("login")}
+
+function newRec(){editId=null;$("f").reset();$("fecha").value=new Date().toISOString().slice(0,10);
+  $("ft").textContent="Nuevo registro";$("fe").textContent="";go("form")}
+function editRec(id){const r=recs.find(x=>x.id===id);if(!r)return;editId=id;
+  FIELDS.forEach(k=>$(k).value=r[k]||"");$("ft").textContent="Editar registro";$("fe").textContent="";go("form")}
+async function save(e){e.preventDefault();
+  const d={};FIELDS.forEach(k=>d[k]=$(k).value.trim());d.por=me.email;
+  const q=editId?sb.from("registros").update(d).eq("id",editId):sb.from("registros").insert(d).select("id").single();
+  const {data,error}=await q;if(error){dbErr(error);return false}
+  if(!editId&&data)editId=data.id;$("ft").textContent="Editar registro";
+  $("fe").style.color="var(--ok)";$("fe").textContent="✔ Registro guardado correctamente.";
+  setTimeout(()=>{$("fe").textContent="";$("fe").style.color=""},3000);return false}
+function delForm(){
+  if(!editId){$("fe").style.color="var(--dg)";$("fe").textContent="Este registro aún no fue guardado, no hay nada que eliminar.";return}
+  askDel(editId)}
+
+function askDel(id){delId=id;$("mp").value="";$("me").textContent="";$("mod").hidden=false;$("mp").focus()}
+function closeM(){$("mod").hidden=true;delId=null}
+async function confDel(){
+  const {error}=await sb.auth.signInWithPassword({email:me.email,password:$("mp").value});
+  if(error){$("me").textContent="Contraseña incorrecta.";return}
+  const r=await sb.from("registros").delete().eq("id",delId);if(r.error){dbErr(r.error);return}
+  closeM();editId=null;await loadRecs();go("hist")}
+
+function wa(r){
+  let t=(r.tel||"").replace(/\D/g,"");
+  if(!t){alert("Este cliente no tiene número cargado.");return}
+  if(t[0]==="0")t="595"+t.slice(1);
+  const m="Bienvenido al Lavadero MTA, primeramente gracias por su preferencia. Compartimos con usted los datos de su agendamiento:\n\n"+
+  "📅 Fecha: "+fd(r.fecha)+"\n🕒 Ingreso: "+r.hin+" – Entrega estimada: "+r.hout+"\n🚗 Vehículo: "+r.marca+" "+r.modelo+" ("+r.chapa+")\n🧽 Servicio: "+r.serv+"\n💰 Costo: "+gs(r.costo)+
+  "\n\nAnte cualquier duda puede contactarse con nosotros por este medio (0985 656 886) y a la brevedad le estaremos respondiendo.";
+  showWa(t,m)}
+function waForm(){const d={};FIELDS.forEach(k=>d[k]=$(k).value.trim());
+  if(!d.tel){$("fe").style.color="var(--dg)";$("fe").textContent="Carga el número del cliente para contactarlo.";return}wa(d)}
+function waId(id){wa(recs.find(x=>x.id===id))}
+
+function rh(){
+  const f=$("hf").value,m=$("hm").value.toLowerCase(),c=$("hc").value.toLowerCase(),n=$("hn").value.toLowerCase();
+  const l=recs.filter(r=>(!f||r.fecha===f)&&(!m||r.marca.toLowerCase().includes(m))&&(!c||r.cliente.toLowerCase().includes(c))&&(!n||(r.fac||"").toLowerCase().includes(n)))
+   .sort((a,b)=>(b.fecha+b.hin).localeCompare(a.fecha+a.hin));
+  $("hb").innerHTML=l.length?l.map(r=>`<tr><td>${fd(r.fecha)}</td><td>${esc(r.hin)}–${esc(r.hout)}</td><td>${esc(r.marca)} ${esc(r.modelo)}</td><td>${esc(r.chapa)}</td><td>${esc(r.cliente)}</td><td>${esc(r.serv)}</td><td>${gs(r.costo)}</td><td>${esc(r.fac)}</td>
+  <td><button class="s" onclick="editRec(${r.id})">Editar</button> <button class="s d" onclick="askDel(${r.id})">Eliminar</button></td></tr>`).join(""):`<tr><td colspan="9" class="mu">Sin registros.</td></tr>`}
+function clr(){["hf","hm","hc","hn"].forEach(i=>$(i).value="");rh()}
+
+function ro(){
+  const m=$("of").value;
+  const l=recs.filter(r=>m==="todos"||(m==="con")===!!r.obs).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  $("ob").innerHTML=l.length?l.map(r=>`<tr><td>${fd(r.fecha)}</td><td>${esc(r.marca)} ${esc(r.modelo)}</td><td>${esc(r.chapa)}</td><td>${esc(r.cliente)}</td><td style="white-space:normal">${r.obs?esc(r.obs):'<span class="mu">Sin observación</span>'}</td></tr>`).join(""):`<tr><td colspan="5" class="mu">Sin resultados.</td></tr>`}
+
+function ra(){
+  const l=[...recs].sort((a,b)=>(a.fecha+a.hin).localeCompare(b.fecha+b.hin));
+  let h="",d="";
+  l.forEach(r=>{if(r.fecha!==d){d=r.fecha;h+=`<div class="ag">${fd(d)}</div>`}
+   h+=`<div class="ev"><div class="t">${esc(r.hin)} → ${esc(r.hout)}</div><div><b>${esc(r.marca)} ${esc(r.modelo)}</b> · ${esc(r.chapa)}<br><span class="mu">${esc(r.serv)} · ${esc(r.cliente)}</span></div></div>`});
+  $("ag").innerHTML=h||'<div class="card mu">No hay agendamientos todavía.</div>'}
+
+function rc(){
+  const m=new Map();
+  recs.forEach(r=>{const k=r.cliente.toLowerCase()+"|"+r.chapa.toLowerCase();if(!m.has(k)||r.tel)m.set(k,r)});
+  const l=[...m.values()].sort((a,b)=>a.cliente.localeCompare(b.cliente));
+  $("cb").innerHTML=l.length?l.map(r=>`<tr><td>${esc(r.cliente)}</td><td>${r.tel?esc(r.tel):'<span class="mu">—</span>'}</td><td>${esc(r.marca)} ${esc(r.modelo)}</td><td>${esc(r.chapa)}</td><td>${r.tel?`<button class="s w" onclick="waId(${r.id})">WhatsApp</button>`:""}</td></tr>`).join(""):`<tr><td colspan="5" class="mu">Aún no hay contactos.</td></tr>`}
+function lab(id){const h=[...$(id).closest("table").querySelectorAll("th")].map(x=>x.textContent);$(id).querySelectorAll("tr").forEach(r=>[...r.children].forEach((c,i)=>{if(h[i])c.setAttribute("data-label",h[i])}))}
+["hb","ob","cb"].forEach(id=>new MutationObserver(()=>lab(id)).observe($(id),{childList:true}));
+sb.auth.getSession().then(async({data})=>{if(data.session){me=data.session.user;await start();go("home")}});
+go("login");
+</script></body></html>
