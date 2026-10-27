@@ -115,8 +115,8 @@ td:last-child{justify-content:flex-end;gap:8px}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 // ====== CONFIGURACIÓN: pega aquí los datos de tu proyecto de Supabase ======
-const SUPABASE_URL="PEGA_AQUI_TU_URL";
-const SUPABASE_KEY="PEGA_AQUI_TU_CLAVE_ANON";
+const SUPABASE_URL="https://tjsqyoyiznxxdvchfyjx.supabase.co";
+const SUPABASE_KEY="sb_publishable_hY4WGZ4dNtbkeX_SIUkdVA_iD9vzCmK";  
 // ===========================================================================
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let ch=null;
